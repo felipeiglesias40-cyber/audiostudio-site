@@ -191,6 +191,7 @@
             align-items: center;
             gap: 5px;
             transition: transform 0.3s;
+            text-decoration: none;
         }
 
         .new-song-btn:hover {
@@ -221,6 +222,7 @@
             font-weight: bold;
             color: #333;
             margin-bottom: 10px;
+            word-break: break-word;
         }
 
         .song-date {
@@ -466,9 +468,9 @@
         <!-- Songs Section -->
         <div class="songs-header">
             <h2>Minhas Músicas</h2>
-            <button class="new-song-btn" onclick="window.location.href='/'">
+            <a href="/" class="new-song-btn">
                 <span>➕</span> Nova Música
-            </button>
+            </a>
         </div>
 
         <!-- Songs Grid -->
@@ -514,24 +516,34 @@
     </div>
 
     <script>
+        // ============================================
+        // CONFIGURAÇÃO DA API (BACKEND NO RENDER)
+        // ============================================
+        const API_URL = "https://audiostudio-backend-1.onrender.com";
+
+        // ============================================
+        // ESTADO DA APLICAÇÃO
+        // ============================================
         let selectedPlan = null;
 
-        // Carregar dados do usuário e músicas
+        // ============================================
+        // CARREGAR DADOS DO USUÁRIO E MÚSICAS
+        // ============================================
         async function loadDashboard() {
             try {
                 // Verificar se está logado
-                const meResponse = await fetch('/me');
+                const meResponse = await fetch(`${API_URL}/me`);
                 if (!meResponse.ok) {
                     window.location.href = '/';
                     return;
                 }
 
                 const meData = await meResponse.json();
-                document.getElementById('userName').textContent = meData.user.name;
-                document.getElementById('userPlan').textContent = `Plano ${meData.user.plan}`;
+                document.getElementById('userName').textContent = meData.user.name || 'Usuário';
+                document.getElementById('userPlan').textContent = `Plano ${meData.user.plan || 'free'}`;
 
                 // Carregar uso
-                const usageResponse = await fetch('/usage');
+                const usageResponse = await fetch(`${API_URL}/usage`);
                 const usageData = await usageResponse.json();
                 
                 const usage = usageData.usage || 0;
@@ -545,20 +557,20 @@
                 document.getElementById('planProgress').style.width = percent + '%';
 
                 // Carregar músicas
-                const songsResponse = await fetch('/songs');
+                const songsResponse = await fetch(`${API_URL}/songs`);
                 const songsData = await songsResponse.json();
                 
-                document.getElementById('totalSongs').textContent = songsData.songs.length;
+                document.getElementById('totalSongs').textContent = songsData.songs ? songsData.songs.length : 0;
 
                 const songsGrid = document.getElementById('songsGrid');
                 
-                if (songsData.songs.length === 0) {
+                if (!songsData.songs || songsData.songs.length === 0) {
                     songsGrid.innerHTML = `
                         <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
                             <p style="color: #666; font-size: 1.2em;">Você ainda não processou nenhuma música</p>
-                            <button class="new-song-btn" style="margin: 20px auto;" onclick="window.location.href='/'">
+                            <a href="/" class="new-song-btn" style="margin: 20px auto; display: inline-block;">
                                 Processar minha primeira música
-                            </button>
+                            </a>
                         </div>
                     `;
                     return;
@@ -566,7 +578,7 @@
 
                 let songsHtml = '';
                 songsData.songs.forEach(song => {
-                    const date = new Date(song.created_at).toLocaleDateString('pt-BR');
+                    const date = song.created_at ? new Date(song.created_at).toLocaleDateString('pt-BR') : 'Data desconhecida';
                     
                     let statusClass = '';
                     let statusText = '';
@@ -583,16 +595,15 @@
                     }
 
                     let stemsHtml = '';
+                    let actionsHtml = '';
+                    
                     if (song.stems && song.stems.length > 0) {
                         stemsHtml = '<div class="song-stems">';
                         song.stems.forEach(stem => {
                             stemsHtml += `<span class="stem-tag">${stem}</span>`;
                         });
                         stemsHtml += '</div>';
-                    }
-
-                    let actionsHtml = '';
-                    if (song.status === 'completed' && song.stems && song.stems.length > 0) {
+                        
                         actionsHtml = '<div class="song-actions">';
                         song.stems.forEach(stem => {
                             actionsHtml += `
@@ -606,7 +617,7 @@
 
                     songsHtml += `
                         <div class="song-card">
-                            <div class="song-title">${song.filename}</div>
+                            <div class="song-title">${song.filename || 'Sem nome'}</div>
                             <div class="song-date">${date}</div>
                             <span class="song-status ${statusClass}">${statusText}</span>
                             ${stemsHtml}
@@ -627,10 +638,12 @@
             }
         }
 
-        // Download de stem
+        // ============================================
+        // DOWNLOAD DE STEM
+        // ============================================
         async function downloadStem(songId, stem) {
             try {
-                window.location.href = `/download/${songId}/${stem}`;
+                window.location.href = `${API_URL}/download/${songId}/${stem}`;
                 
                 // Incrementar contador de downloads (simples)
                 const totalDownloads = document.getElementById('totalDownloads');
@@ -638,20 +651,26 @@
                 
             } catch (error) {
                 alert('Erro ao baixar arquivo');
+                console.error('Erro:', error);
             }
         }
 
-        // Logout
+        // ============================================
+        // LOGOUT
+        // ============================================
         async function logout() {
             try {
-                await fetch('/logout', { method: 'POST' });
+                await fetch(`${API_URL}/logout`, { method: 'POST' });
                 window.location.href = '/';
             } catch (error) {
                 alert('Erro ao sair');
+                console.error('Erro:', error);
             }
         }
 
-        // Modal de upgrade
+        // ============================================
+        // MODAL DE UPGRADE
+        // ============================================
         function showUpgradeModal() {
             document.getElementById('upgradeModal').style.display = 'flex';
         }
