@@ -506,11 +506,55 @@
     </div>
 
     <script>
-        // Estado da aplicação
+        // ============================================
+        // CONFIGURAÇÃO DA API (BACKEND NO RENDER)
+        // ============================================
+        const API_URL = "https://audiostudio-backend-1.onrender.com";
+
+        // Testar conexão com o backend
+        (function testConnection() {
+            fetch(`${API_URL}/health`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('✅ Conectado ao backend:', data);
+                    // Mostrar indicador visual
+                    const indicator = document.createElement('div');
+                    indicator.style.position = 'fixed';
+                    indicator.style.bottom = '10px';
+                    indicator.style.right = '10px';
+                    indicator.style.background = 'green';
+                    indicator.style.color = 'white';
+                    indicator.style.padding = '5px';
+                    indicator.style.borderRadius = '5px';
+                    indicator.style.zIndex = '9999';
+                    indicator.textContent = '✅ Backend online';
+                    document.body.appendChild(indicator);
+                })
+                .catch(error => {
+                    console.error('❌ Erro ao conectar ao backend:', error);
+                    const indicator = document.createElement('div');
+                    indicator.style.position = 'fixed';
+                    indicator.style.bottom = '10px';
+                    indicator.style.right = '10px';
+                    indicator.style.background = 'red';
+                    indicator.style.color = 'white';
+                    indicator.style.padding = '5px';
+                    indicator.style.borderRadius = '5px';
+                    indicator.style.zIndex = '9999';
+                    indicator.textContent = '❌ Backend offline';
+                    document.body.appendChild(indicator);
+                });
+        })();
+
+        // ============================================
+        // ESTADO DA APLICAÇÃO
+        // ============================================
         let isLoggedIn = false;
         let currentSongId = null;
 
-        // Modal
+        // ============================================
+        // MODAL
+        // ============================================
         function showModal(type) {
             document.getElementById('authModal').style.display = 'flex';
             switchModal(type);
@@ -539,7 +583,9 @@
             }
         }
 
-        // Registro
+        // ============================================
+        // REGISTRO
+        // ============================================
         async function register() {
             const name = document.getElementById('regName').value;
             const email = document.getElementById('regEmail').value;
@@ -559,7 +605,7 @@
             }
 
             try {
-                const response = await fetch('/register', {
+                const response = await fetch(`${API_URL}/register`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({name, email, password})
@@ -575,12 +621,15 @@
                     errorDiv.style.display = 'block';
                 }
             } catch (error) {
-                errorDiv.textContent = 'Erro de conexão';
+                errorDiv.textContent = 'Erro de conexão com o servidor';
                 errorDiv.style.display = 'block';
+                console.error('Erro:', error);
             }
         }
 
-        // Login
+        // ============================================
+        // LOGIN
+        // ============================================
         async function login() {
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
@@ -593,7 +642,7 @@
             }
 
             try {
-                const response = await fetch('/login', {
+                const response = await fetch(`${API_URL}/login`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({email, password})
@@ -625,12 +674,15 @@
                     errorDiv.style.display = 'block';
                 }
             } catch (error) {
-                errorDiv.textContent = 'Erro de conexão';
+                errorDiv.textContent = 'Erro de conexão com o servidor';
                 errorDiv.style.display = 'block';
+                console.error('Erro:', error);
             }
         }
 
-        // Upload
+        // ============================================
+        // UPLOAD
+        // ============================================
         document.getElementById('fileInput').addEventListener('change', async function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -642,7 +694,7 @@
             document.querySelector('.upload-area').style.opacity = '0.5';
 
             try {
-                const response = await fetch('/upload', {
+                const response = await fetch(`${API_URL}/upload`, {
                     method: 'POST',
                     body: formData
                 });
@@ -661,26 +713,31 @@
                 } else if (response.status === 403) {
                     alert(data.error || 'Limite do plano atingido');
                 } else {
-                    alert('Erro no upload');
+                    alert('Erro no upload: ' + (data.error || 'Erro desconhecido'));
                 }
             } catch (error) {
-                alert('Erro de conexão');
+                alert('Erro de conexão com o servidor');
+                console.error('Erro:', error);
             } finally {
                 document.getElementById('loading').style.display = 'none';
                 document.querySelector('.upload-area').style.opacity = '1';
             }
         });
 
-        // Verificar status do processamento
+        // ============================================
+        // VERIFICAR STATUS DO PROCESSAMENTO
+        // ============================================
         async function checkStatus(songId) {
             const interval = setInterval(async () => {
                 try {
-                    const response = await fetch(`/status/${songId}`);
+                    const response = await fetch(`${API_URL}/status/${songId}`);
                     const data = await response.json();
 
                     if (data.status === 'completed') {
                         clearInterval(interval);
                         alert('Processamento concluído! Verifique seus arquivos.');
+                        // Opcional: redirecionar para dashboard
+                        window.location.href = '/dashboard';
                     } else if (data.status === 'error') {
                         clearInterval(interval);
                         alert('Erro no processamento: ' + data.error);
@@ -691,10 +748,12 @@
             }, 5000);
         }
 
-        // Verificar se já está logado ao carregar a página
+        // ============================================
+        // VERIFICAR SE JÁ ESTÁ LOGADO AO CARREGAR
+        // ============================================
         async function checkLogin() {
             try {
-                const response = await fetch('/me');
+                const response = await fetch(`${API_URL}/me`);
                 if (response.ok) {
                     const data = await response.json();
                     isLoggedIn = true;
@@ -714,7 +773,9 @@
                     dashboardBtn.onclick = () => window.location.href = '/dashboard';
                     header.appendChild(dashboardBtn);
                 }
-            } catch (error) {}
+            } catch (error) {
+                console.log('Erro ao verificar login:', error);
+            }
         }
 
         // Verificar login ao carregar
