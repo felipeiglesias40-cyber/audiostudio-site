@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AudioStudio Online – Separação Profissional de Instrumentos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #ffd700;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-buttons button {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .btn-login {
+            background: transparent;
+            color: white;
+            border: 2px solid white !important;
+        }
+
+        .btn-signup {
+            background: #ffd700;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .nav-buttons button:hover {
+            transform: scale(1.05);
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .hero h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 1.2em;
+            max-width: 600px;
+            margin: 0 auto 40px;
+            opacity: 0.9;
+        }
+
+        /* Upload Area */
+        .upload-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .upload-area {
+            background: rgba(255,255,255,0.1);
+            border: 3px dashed rgba(255,255,255,0.3);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        .upload-area:hover {
+            border-color: #ffd700;
+            background: rgba(255,255,255,0.15);
+        }
+
+        .upload-area i {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .upload-area h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .upload-area p {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        /* Features */
+        .features {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 60px 20px;
+            flex-wrap: wrap;
+        }
+
+        .feature {
+            text-align: center;
+            max-width: 250px;
+        }
+
+        .feature i {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #ffd700;
+        }
+
+        .feature h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .feature p {
+            opacity: 0.8;
+            line-height: 1.5;
+        }
+
+        /* Planos */
+        .plans {
+            padding: 60px 20px;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .plans h2 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 50px;
+        }
+
+        .plan-cards {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .plan-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            width: 250px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: transform 0.3s;
+        }
+
+        .plan-card:hover {
+            transform: translateY(-10px);
+            border-color: #ffd700;
+        }
+
+        .plan-card h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .plan-price {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #ffd700;
+            margin: 20px 0;
+        }
+
+        .plan-price small {
+            font-size: 0.4em;
+            font-weight: normal;
+            opacity: 0.8;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .plan-features li {
+            margin: 10px 0;
+            font-size: 0.9em;
+        }
+
+        .plan-btn {
+            background: #ffd700;
+            color: #333;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s;
+            width: 100%;
+        }
+
+        .plan-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .plan-btn.free {
+            background: transparent;
+            border: 2px solid #ffd700;
+            color: white;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            color: #333;
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        .modal h2 {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .modal input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .modal button {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .modal button:hover {
+            background: #764ba2;
+        }
+
+        .modal-switch {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+
+        .modal-switch a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .error-message {
+            color: #e53e3e;
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: none;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background: rgba(0,0,0,0.3);
+            margin-top: 60px;
+        }
+
+        /* Loading */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid #ffd700;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">Audio<span>Studio</span>.online</div>
+        <div class="nav-buttons">
+            <button class="btn-login" onclick="showModal('login')">Entrar</button>
+            <button class="btn-signup" onclick="showModal('register')">Criar Conta</button>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <h1>Separe Instrumentos<br>com IA Profissional</h1>
+        <p>Extraia vocais, bateria, baixo e muito mais de qualquer música em segundos. Qualidade de estúdio direto no seu navegador.</p>
+        
+        <!-- Upload Area (visível apenas logado) -->
+        <div class="upload-container" id="uploadSection" style="display: none;">
+            <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                <i>📁</i>
+                <h3>Arraste sua música ou clique aqui</h3>
+                <p>MP3, WAV, FLAC ou M4A (até 50MB)</p>
+                <input type="file" id="fileInput" accept=".mp3,.wav,.flac,.m4a" style="display: none;">
+            </div>
+            <div class="loading" id="loading">
+                <div class="loading-spinner"></div>
+                <p>Processando sua música...</p>
+            </div>
+        </div>
+
+        <!-- Call to Action (visível apenas deslogado) -->
+        <div id="ctaSection">
+            <button class="btn-signup" style="font-size: 1.2em; padding: 15px 40px;" onclick="showModal('register')">
+                Começar Grátis
+            </button>
+            <p style="margin-top: 20px; opacity: 0.8;">3 músicas grátis por mês • Sem cartão de crédito</p>
+        </div>
+    </div>
+
+    <!-- Features -->
+    <div class="features">
+        <div class="feature">
+            <i>⚡</i>
+            <h3>Rápido</h3>
+            <p>Processamento em segundos com IA de última geração</p>
+        </div>
+        <div class="feature">
+            <i>🎵</i>
+            <h3>4+ Stems</h3>
+            <p>Vocais, bateria, baixo, guitarra, piano e mais</p>
+        </div>
+        <div class="feature">
+            <i>🔒</i>
+            <h3>Privado</h3>
+            <p>Seus arquivos são processados com segurança</p>
+        </div>
+        <div class="feature">
+            <i>📱</i>
+            <h3>Multi-plataforma</h3>
+            <p>Funciona no celular, tablet ou computador</p>
+        </div>
+    </div>
+
+    <!-- Planos -->
+    <div class="plans">
+        <h2>Planos e Preços</h2>
+        <div class="plan-cards">
+            <div class="plan-card">
+                <h3>🎵 Grátis</h3>
+                <div class="plan-price">R$ 0</div>
+                <ul class="plan-features">
+                    <li>✅ 3 músicas por mês</li>
+                    <li>✅ MP3 128kbps</li>
+                    <li>✅ Até 5min por música</li>
+                    <li>❌ WAV</li>
+                    <li>❌ Processamento prioritário</li>
+                </ul>
+                <button class="plan-btn free" onclick="showModal('register')">Começar</button>
+            </div>
+            <div class="plan-card">
+                <h3>⚡ Básico</h3>
+                <div class="plan-price">R$ 19,90 <small>/mês</small></div>
+                <ul class="plan-features">
+                    <li>✅ 30 músicas por mês</li>
+                    <li>✅ MP3 320kbps</li>
+                    <li>✅ Até 10min por música</li>
+                    <li>❌ WAV</li>
+                    <li>❌ Processamento prioritário</li>
+                </ul>
+                <button class="plan-btn" onclick="showModal('register')">Assinar</button>
+            </div>
+            <div class="plan-card">
+                <h3>🔥 Profissional</h3>
+                <div class="plan-price">R$ 39,90 <small>/mês</small></div>
+                <ul class="plan-features">
+                    <li>✅ 100 músicas por mês</li>
+                    <li>✅ WAV qualidade máxima</li>
+                    <li>✅ Até 20min por música</li>
+                    <li>✅ 6 stems</li>
+                    <li>❌ Processamento prioritário</li>
+                </ul>
+                <button class="plan-btn" onclick="showModal('register')">Assinar</button>
+            </div>
+            <div class="plan-card">
+                <h3>🏢 Estúdio</h3>
+                <div class="plan-price">R$ 99,90 <small>/mês</small></div>
+                <ul class="plan-features">
+                    <li>✅ Músicas ilimitadas</li>
+                    <li>✅ WAV qualidade máxima</li>
+                    <li>✅ Até 60min por música</li>
+                    <li>✅ API exclusiva</li>
+                    <li>✅ Suporte prioritário</li>
+                </ul>
+                <button class="plan-btn" onclick="showModal('register')">Assinar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Login/Registro -->
+    <div class="modal" id="authModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="hideModal()">&times;</span>
+            <h2 id="modalTitle">Entrar</h2>
+            <div id="loginForm">
+                <input type="email" id="loginEmail" placeholder="Seu email">
+                <input type="password" id="loginPassword" placeholder="Sua senha">
+                <div class="error-message" id="loginError"></div>
+                <button onclick="login()">Entrar</button>
+                <p class="modal-switch">Não tem conta? <a onclick="switchModal('register')">Criar conta</a></p>
+            </div>
+            <div id="registerForm" style="display: none;">
+                <input type="text" id="regName" placeholder="Seu nome">
+                <input type="email" id="regEmail" placeholder="Seu email">
+                <input type="password" id="regPassword" placeholder="Sua senha (mínimo 6 caracteres)">
+                <div class="error-message" id="registerError"></div>
+                <button onclick="register()">Criar conta</button>
+                <p class="modal-switch">Já tem conta? <a onclick="switchModal('login')">Fazer login</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>© 2026 AudioStudio Online • Separação profissional de instrumentos com IA</p>
+    </div>
+
+    <script>
+        // Estado da aplicação
+        let isLoggedIn = false;
+        let currentSongId = null;
+
+        // Modal
+        function showModal(type) {
+            document.getElementById('authModal').style.display = 'flex';
+            switchModal(type);
+        }
+
+        function hideModal() {
+            document.getElementById('authModal').style.display = 'none';
+        }
+
+        function switchModal(type) {
+            if (type === 'login') {
+                document.getElementById('modalTitle').textContent = 'Entrar';
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('registerForm').style.display = 'none';
+            } else {
+                document.getElementById('modalTitle').textContent = 'Criar Conta';
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('registerForm').style.display = 'block';
+            }
+        }
+
+        // Fechar modal clicando fora
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('authModal')) {
+                hideModal();
+            }
+        }
+
+        // Registro
+        async function register() {
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const errorDiv = document.getElementById('registerError');
+
+            if (!name || !email || !password) {
+                errorDiv.textContent = 'Todos os campos são obrigatórios';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            if (password.length < 6) {
+                errorDiv.textContent = 'A senha deve ter pelo menos 6 caracteres';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({name, email, password})
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    hideModal();
+                    alert('Conta criada com sucesso! Faça login para continuar.');
+                } else {
+                    errorDiv.textContent = data.error || 'Erro ao criar conta';
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Erro de conexão';
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        // Login
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+
+            if (!email || !password) {
+                errorDiv.textContent = 'Email e senha obrigatórios';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({email, password})
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    isLoggedIn = true;
+                    hideModal();
+                    
+                    // Mostrar área de upload
+                    document.getElementById('uploadSection').style.display = 'block';
+                    document.getElementById('ctaSection').style.display = 'none';
+                    
+                    // Esconder botões de login/registro
+                    document.querySelector('.nav-buttons').style.display = 'none';
+                    
+                    // Adicionar botão de dashboard
+                    const header = document.querySelector('.header');
+                    const dashboardBtn = document.createElement('button');
+                    dashboardBtn.className = 'btn-login';
+                    dashboardBtn.textContent = 'Meu Dashboard';
+                    dashboardBtn.onclick = () => window.location.href = '/dashboard';
+                    header.appendChild(dashboardBtn);
+                    
+                } else {
+                    errorDiv.textContent = data.error || 'Erro ao fazer login';
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Erro de conexão';
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        // Upload
+        document.getElementById('fileInput').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            document.getElementById('loading').style.display = 'block';
+            document.querySelector('.upload-area').style.opacity = '0.5';
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    currentSongId = data.song_id;
+                    alert('Upload enviado! O processamento pode levar alguns minutos.');
+                    
+                    // Começar a verificar status
+                    checkStatus(data.song_id);
+                } else if (response.status === 401) {
+                    alert('Faça login primeiro');
+                    showModal('login');
+                } else if (response.status === 403) {
+                    alert(data.error || 'Limite do plano atingido');
+                } else {
+                    alert('Erro no upload');
+                }
+            } catch (error) {
+                alert('Erro de conexão');
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+                document.querySelector('.upload-area').style.opacity = '1';
+            }
+        });
+
+        // Verificar status do processamento
+        async function checkStatus(songId) {
+            const interval = setInterval(async () => {
+                try {
+                    const response = await fetch(`/status/${songId}`);
+                    const data = await response.json();
+
+                    if (data.status === 'completed') {
+                        clearInterval(interval);
+                        alert('Processamento concluído! Verifique seus arquivos.');
+                    } else if (data.status === 'error') {
+                        clearInterval(interval);
+                        alert('Erro no processamento: ' + data.error);
+                    }
+                } catch (error) {
+                    console.log('Erro ao verificar status');
+                }
+            }, 5000);
+        }
+
+        // Verificar se já está logado ao carregar a página
+        async function checkLogin() {
+            try {
+                const response = await fetch('/me');
+                if (response.ok) {
+                    const data = await response.json();
+                    isLoggedIn = true;
+                    
+                    // Mostrar área de upload
+                    document.getElementById('uploadSection').style.display = 'block';
+                    document.getElementById('ctaSection').style.display = 'none';
+                    
+                    // Esconder botões de login/registro
+                    document.querySelector('.nav-buttons').style.display = 'none';
+                    
+                    // Adicionar botão de dashboard
+                    const header = document.querySelector('.header');
+                    const dashboardBtn = document.createElement('button');
+                    dashboardBtn.className = 'btn-login';
+                    dashboardBtn.textContent = 'Meu Dashboard';
+                    dashboardBtn.onclick = () => window.location.href = '/dashboard';
+                    header.appendChild(dashboardBtn);
+                }
+            } catch (error) {}
+        }
+
+        // Verificar login ao carregar
+        checkLogin();
+    </script>
+</body>
+</html>

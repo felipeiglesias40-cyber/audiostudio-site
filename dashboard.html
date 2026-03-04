@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard – AudioStudio Online</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #ffd700;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-name {
+            font-weight: bold;
+        }
+
+        .user-plan {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 0.9em;
+        }
+
+        .logout-btn {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Cards de estatísticas */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .stat-icon {
+            font-size: 2.5em;
+        }
+
+        .stat-info h3 {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .stat-info p {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Barra de progresso do plano */
+        .plan-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .plan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .plan-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .plan-usage {
+            font-size: 1.1em;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .upgrade-btn {
+            background: #ffd700;
+            color: #333;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s;
+            margin-top: 20px;
+        }
+
+        .upgrade-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Lista de músicas */
+        .songs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .songs-header h2 {
+            color: #333;
+        }
+
+        .new-song-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: transform 0.3s;
+        }
+
+        .new-song-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .songs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .song-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .song-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .song-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .song-date {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .song-stems {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .stem-tag {
+            background: #f0f0f0;
+            padding: 3px 10px;
+            border-radius: 50px;
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        .song-status {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 50px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-processing {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .download-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-right: 5px;
+        }
+
+        .download-btn:hover {
+            background: #764ba2;
+        }
+
+        .song-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Modal upgrade */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        .plan-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .plan-card-small {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .plan-card-small:hover {
+            border-color: #667eea;
+            transform: scale(1.05);
+        }
+
+        .plan-card-small.selected {
+            border-color: #ffd700;
+            background: #fff9e6;
+        }
+
+        .plan-card-small h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .plan-price-small {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 15px 0;
+        }
+
+        .plan-price-small small {
+            font-size: 0.5em;
+            color: #666;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">Audio<span>Studio</span>.online</div>
+        <div class="user-info" id="userInfo">
+            <span class="user-name" id="userName">Carregando...</span>
+            <span class="user-plan" id="userPlan">Plano Grátis</span>
+            <button class="logout-btn" onclick="logout()">Sair</button>
+        </div>
+    </div>
+
+    <!-- Container -->
+    <div class="container">
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🎵</div>
+                <div class="stat-info">
+                    <h3>Músicas processadas</h3>
+                    <p id="totalSongs">0</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-info">
+                    <h3>Uso do plano</h3>
+                    <p id="usageCount">0/3</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⏱️</div>
+                <div class="stat-info">
+                    <h3>Disponível</h3>
+                    <p id="availableSongs">3</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💾</div>
+                <div class="stat-info">
+                    <h3>Stems baixados</h3>
+                    <p id="totalDownloads">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Plan Card -->
+        <div class="plan-card">
+            <div class="plan-header">
+                <span class="plan-name" id="currentPlan">Plano Grátis</span>
+                <span class="plan-usage" id="planUsage">0 de 3 músicas</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="planProgress" style="width: 0%;"></div>
+            </div>
+            <p>Reseta em <span id="resetDays">30</span> dias</p>
+            <button class="upgrade-btn" onclick="showUpgradeModal()">Fazer upgrade do plano</button>
+        </div>
+
+        <!-- Songs Section -->
+        <div class="songs-header">
+            <h2>Minhas Músicas</h2>
+            <button class="new-song-btn" onclick="window.location.href='/'">
+                <span>➕</span> Nova Música
+            </button>
+        </div>
+
+        <!-- Songs Grid -->
+        <div class="songs-grid" id="songsGrid">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <p>Carregando suas músicas...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upgrade Modal -->
+    <div class="modal" id="upgradeModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="hideUpgradeModal()">&times;</span>
+            <h2>Escolha seu plano</h2>
+            <div class="plan-cards">
+                <div class="plan-card-small" onclick="selectPlan('basic')">
+                    <h3>⚡ Básico</h3>
+                    <div class="plan-price-small">R$ 19,90<small>/mês</small></div>
+                    <p>30 músicas/mês</p>
+                    <p>MP3 320kbps</p>
+                </div>
+                <div class="plan-card-small" onclick="selectPlan('pro')">
+                    <h3>🔥 Profissional</h3>
+                    <div class="plan-price-small">R$ 39,90<small>/mês</small></div>
+                    <p>100 músicas/mês</p>
+                    <p>WAV qualidade máxima</p>
+                    <p>6 stems</p>
+                </div>
+                <div class="plan-card-small" onclick="selectPlan('studio')">
+                    <h3>🏢 Estúdio</h3>
+                    <div class="plan-price-small">R$ 99,90<small>/mês</small></div>
+                    <p>Ilimitado</p>
+                    <p>WAV + API</p>
+                    <p>Suporte prioritário</p>
+                </div>
+            </div>
+            <button class="upgrade-btn" style="width: 100%; margin-top: 30px;" onclick="upgradePlan()">
+                Confirmar upgrade
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let selectedPlan = null;
+
+        // Carregar dados do usuário e músicas
+        async function loadDashboard() {
+            try {
+                // Verificar se está logado
+                const meResponse = await fetch('/me');
+                if (!meResponse.ok) {
+                    window.location.href = '/';
+                    return;
+                }
+
+                const meData = await meResponse.json();
+                document.getElementById('userName').textContent = meData.user.name;
+                document.getElementById('userPlan').textContent = `Plano ${meData.user.plan}`;
+
+                // Carregar uso
+                const usageResponse = await fetch('/usage');
+                const usageData = await usageResponse.json();
+                
+                const usage = usageData.usage || 0;
+                const limit = usageData.limit === 'ilimitado' ? 999 : usageData.limit;
+                
+                document.getElementById('usageCount').textContent = `${usage}/${limit}`;
+                document.getElementById('availableSongs').textContent = Math.max(0, limit - usage);
+                document.getElementById('planUsage').textContent = `${usage} de ${limit} músicas`;
+                
+                const percent = Math.min(100, (usage / limit) * 100);
+                document.getElementById('planProgress').style.width = percent + '%';
+
+                // Carregar músicas
+                const songsResponse = await fetch('/songs');
+                const songsData = await songsResponse.json();
+                
+                document.getElementById('totalSongs').textContent = songsData.songs.length;
+
+                const songsGrid = document.getElementById('songsGrid');
+                
+                if (songsData.songs.length === 0) {
+                    songsGrid.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                            <p style="color: #666; font-size: 1.2em;">Você ainda não processou nenhuma música</p>
+                            <button class="new-song-btn" style="margin: 20px auto;" onclick="window.location.href='/'">
+                                Processar minha primeira música
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let songsHtml = '';
+                songsData.songs.forEach(song => {
+                    const date = new Date(song.created_at).toLocaleDateString('pt-BR');
+                    
+                    let statusClass = '';
+                    let statusText = '';
+                    
+                    if (song.status === 'completed') {
+                        statusClass = 'status-completed';
+                        statusText = '✅ Concluído';
+                    } else if (song.status === 'processing') {
+                        statusClass = 'status-processing';
+                        statusText = '⏳ Processando';
+                    } else {
+                        statusClass = 'status-error';
+                        statusText = '❌ Erro';
+                    }
+
+                    let stemsHtml = '';
+                    if (song.stems && song.stems.length > 0) {
+                        stemsHtml = '<div class="song-stems">';
+                        song.stems.forEach(stem => {
+                            stemsHtml += `<span class="stem-tag">${stem}</span>`;
+                        });
+                        stemsHtml += '</div>';
+                    }
+
+                    let actionsHtml = '';
+                    if (song.status === 'completed' && song.stems && song.stems.length > 0) {
+                        actionsHtml = '<div class="song-actions">';
+                        song.stems.forEach(stem => {
+                            actionsHtml += `
+                                <button class="download-btn" onclick="downloadStem('${song.id}', '${stem}')">
+                                    ⬇️ ${stem}
+                                </button>
+                            `;
+                        });
+                        actionsHtml += '</div>';
+                    }
+
+                    songsHtml += `
+                        <div class="song-card">
+                            <div class="song-title">${song.filename}</div>
+                            <div class="song-date">${date}</div>
+                            <span class="song-status ${statusClass}">${statusText}</span>
+                            ${stemsHtml}
+                            ${actionsHtml}
+                        </div>
+                    `;
+                });
+
+                songsGrid.innerHTML = songsHtml;
+
+            } catch (error) {
+                console.error('Erro ao carregar dashboard:', error);
+                document.getElementById('songsGrid').innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                        <p style="color: #e53e3e;">Erro ao carregar dados. Tente novamente.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Download de stem
+        async function downloadStem(songId, stem) {
+            try {
+                window.location.href = `/download/${songId}/${stem}`;
+                
+                // Incrementar contador de downloads (simples)
+                const totalDownloads = document.getElementById('totalDownloads');
+                totalDownloads.textContent = parseInt(totalDownloads.textContent || '0') + 1;
+                
+            } catch (error) {
+                alert('Erro ao baixar arquivo');
+            }
+        }
+
+        // Logout
+        async function logout() {
+            try {
+                await fetch('/logout', { method: 'POST' });
+                window.location.href = '/';
+            } catch (error) {
+                alert('Erro ao sair');
+            }
+        }
+
+        // Modal de upgrade
+        function showUpgradeModal() {
+            document.getElementById('upgradeModal').style.display = 'flex';
+        }
+
+        function hideUpgradeModal() {
+            document.getElementById('upgradeModal').style.display = 'none';
+            selectedPlan = null;
+        }
+
+        function selectPlan(plan) {
+            selectedPlan = plan;
+            
+            // Remover seleção anterior
+            document.querySelectorAll('.plan-card-small').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Adicionar seleção ao card clicado
+            event.currentTarget.classList.add('selected');
+        }
+
+        function upgradePlan() {
+            if (!selectedPlan) {
+                alert('Selecione um plano');
+                return;
+            }
+            
+            alert(`Funcionalidade de upgrade para plano ${selectedPlan} será implementada com integração de pagamento.`);
+            hideUpgradeModal();
+        }
+
+        // Fechar modal clicando fora
+        window.onclick = function(event) {
+            const modal = document.getElementById('upgradeModal');
+            if (event.target == modal) {
+                hideUpgradeModal();
+            }
+        }
+
+        // Carregar dashboard ao iniciar
+        loadDashboard();
+
+        // Atualizar a cada 30 segundos (para verificar status de processamento)
+        setInterval(loadDashboard, 30000);
+    </script>
+</body>
+</html>
